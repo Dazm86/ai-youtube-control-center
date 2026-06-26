@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI YouTube Control Center</title>
+
+<style>
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:tahoma;
+}
+
+body{
+background:#111;
+color:white;
+}
+
+.header{
+background:#1d1d1d;
+padding:15px;
+text-align:center;
+font-size:22px;
+font-weight:bold;
+}
+
+.menu{
+display:flex;
+overflow:auto;
+background:#222;
+}
+
+.menu button{
+background:none;
+border:none;
+color:white;
+padding:15px;
+cursor:pointer;
+min-width:120px;
+}
+
+.menu button:hover{
+background:#333;
+}
+
+.page{
+display:none;
+padding:20px;
+}
+
+.active{
+display:block;
+}
+
+.card{
+background:#1f1f1f;
+padding:15px;
+border-radius:12px;
+margin-bottom:15px;
+}
+
+input{
+width:100%;
+padding:10px;
+margin-top:10px;
+border:none;
+border-radius:8px;
+}
+
+button.save{
+background:#28a745;
+color:white;
+padding:10px;
+border:none;
+border-radius:8px;
+margin-top:10px;
+width:100%;
+}
+
+.channel{
+background:#2a2a2a;
+padding:10px;
+margin-top:10px;
+border-radius:8px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">
+AI YouTube Control Center
+</div>
+
+<div class="menu">
+<button onclick="showPage('dashboard')">داشبورد</button>
+<button onclick="showPage('channels')">کانال ها</button>
+<button onclick="showPage('apis')">API ها</button>
+<button onclick="showPage('versions')">نسخه ها</button>
+</div>
+
+<div id="dashboard" class="page active">
+
+<div class="card">
+<h2>📺 کانال ها</h2>
+<p id="channelCount">0</p>
+</div>
+
+<div class="card">
+<h2>🔑 API ها</h2>
+<p id="apiCount">0</p>
+</div>
+
+</div>
+
+<div id="channels" class="page">
+
+<div class="card">
+
+<h3>افزودن کانال</h3>
+
+<input id="channelName" placeholder="نام کانال">
+
+<button class="save" onclick="addChannel()">
+ثبت کانال
+</button>
+
+</div>
+
+<div id="channelList"></div>
+
+</div>
+
+<div id="apis" class="page">
+
+<div class="card">
+
+<h3>افزودن API</h3>
+
+<input id="apiName" placeholder="نام سرویس">
+
+<input id="apiKey" placeholder="API Key">
+
+<button class="save" onclick="addApi()">
+ثبت API
+</button>
+
+</div>
+
+<div id="apiList"></div>
+
+</div>
+
+<div id="versions" class="page">
+
+<div class="card">
+<h3>نسخه فعلی</h3>
+<p>v0.2</p>
+<p>🟢 Healthy</p>
+</div>
+
+</div>
+
+<script>
+
+function showPage(id){
+
+document.querySelectorAll('.page').forEach(p=>{
+p.classList.remove('active')
+})
+
+document.getElementById(id).classList.add('active')
+
+}
+
+let channels =
+JSON.parse(localStorage.getItem('channels')) || []
+
+let apis =
+JSON.parse(localStorage.getItem('apis')) || []
+
+function saveData(){
+
+localStorage.setItem(
+'channels',
+JSON.stringify(channels)
+)
+
+localStorage.setItem(
+'apis',
+JSON.stringify(apis)
+)
+
+render()
+
+}
+
+function addChannel(){
+
+let name =
+document.getElementById('channelName').value
+
+if(!name) return
+
+channels.push(name)
+
+document.getElementById('channelName').value=''
+
+saveData()
+
+}
+
+function addApi(){
+
+let name =
+document.getElementById('apiName').value
+
+let key =
+document.getElementById('apiKey').value
+
+if(!name || !key) return
+
+apis.push({
+name,
+key
+})
+
+document.getElementById('apiName').value=''
+document.getElementById('apiKey').value=''
+
+saveData()
+
+}
+
+function render(){
+
+document.getElementById('channelCount').innerText=
+channels.length
+
+document.getElementById('apiCount').innerText=
+apis.length
+
+let c=''
+
+channels.forEach(ch=>{
+c+=`
+<div class="channel">
+📺 ${ch}
+</div>
+`
+})
+
+document.getElementById('channelList').innerHTML=c
+
+let a=''
+
+apis.forEach(api=>{
+a+=`
+<div class="channel">
+🔑 ${api.name}
+</div>
+`
+})
+
+document.getElementById('apiList').innerHTML=a
+
+}
+
+render()
+
+</script>
+
+</body>
+</html>
